@@ -98,6 +98,8 @@ Maximum inventory capacity is limited using:
 ```
 #define MAX_ITEMS 100
 ```
+But it can be changedbby changing the value.
+
 3. Exact Name Matching
 
 Deletion requires exact item name matching using strcmp().
@@ -106,9 +108,6 @@ Example:
 ```
 Laptop ≠ laptop
 ```
-4.Update Feature Incomplete:
-
-updateItem() is still under development and currently acts as a placeholder.
 
 📁 File Structure
 ```
