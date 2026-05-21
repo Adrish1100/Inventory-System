@@ -9,9 +9,9 @@
 #else
 #define CLEAR system("clear")
 #endif
+
 #define MAX_ITEMS 100
 #define MAX_NAME_LENGTH 50
-
 #define gotoxy(x, y) printf("\033[%d;%dH", (y), (x))
 
 #define TRUE 1
@@ -53,7 +53,6 @@ int main()
 {
 	void (*menuFunctions[4])(void) = {addItem, viewInventory, updateItem, deleteItem}; /* A FUNCTION POINTER POINTING TO THE VARIOUS FUNCTIONS USED*/
 
-	char continueChoice;
 	int choice;
 
 	do
@@ -167,6 +166,7 @@ void addItem()
 	while (getchar() != '\n')
 		;
 }
+
 void viewInventory()
 {
 	CLEAR;
@@ -183,18 +183,80 @@ void viewInventory()
 		return;
 	}
 	displayInventory();
+    
+	printf("\tPress Enter to continue: ");
+	while (getchar() != '\n');
 }
 
 void updateItem()
 {
+    char tempinput[MAX_NAME_LENGTH],tempchoice[5],correct_name[MAX_NAME_LENGTH],correct_quantity[MAX_NAME_LENGTH];
+    int sl_no,choice_no;
+
 	CLEAR;
 	gotoxy(15, HEADER_COL);
 	printf("************* UPDATE ITEM *************\n");
+    if (ITEM_COUNT == 0)
+	{
+		gotoxy(15, 5);
+		printf("Inventory is empty.\n");
+
+		printf("\tPress Enter to continue: ");
+		while (getchar() != '\n')
+			;
+		return;
+	}
+
 	gotoxy(15, 5);
-	printf("This feature is currently under development. Please check back later.\n\n");
-	printf("\tPress Enter to continue: ");
-	while (getchar() != '\n')
-		;
+    displayInventory();
+
+    while (1)
+    {
+        printf("\nEnter the SL.NO: ");
+        fgets(tempinput, sizeof(tempinput), stdin);
+        tempinput[strcspn(tempinput, "\n")] = '\0';
+
+        if (sscanf(tempinput, "%d", &sl_no) != 1 || sl_no < 1 || sl_no > ITEM_COUNT)
+        {
+            printf("Please enter 1 to %d only!!\n", ITEM_COUNT);
+            continue;
+        }
+        break;
+    }
+    printf("What would you like to correct?\n1. ITEM NAME\n2. ITEM QUANTITY\n");
+
+    while (1)
+    {
+        printf("\nEnter the choice: ");
+
+        fgets(tempchoice, sizeof(tempchoice), stdin);
+        tempchoice[strcspn(tempchoice, "\n")] = '\0';
+    
+        if (sscanf(tempchoice, "%d", &choice_no) != 1 || choice_no < 1 || choice_no > 2)
+        {
+            printf("Please enter 1 or 2 only!!\n");
+            continue;
+        }
+        break;
+    }
+
+    if (choice_no == 1)
+    {
+        printf("Enter the correct name: ");
+        fgets(correct_name, sizeof(correct_name), stdin);
+        correct_name[strcspn(correct_name, "\n")] = '\0';
+        strcpy(inventory[sl_no - 1].name, correct_name);
+    }
+    else
+    {
+        printf("Enter the correct quantity: ");
+        fgets(correct_quantity, sizeof(correct_quantity), stdin);
+        correct_quantity[strcspn(correct_quantity, "\n")] = '\0';
+        inventory[sl_no - 1].quantity = atoi(correct_quantity);
+    }
+    printf("\tPress Enter to continue: ");
+    while (getchar() != '\n')
+    ;
 }
 
 void deleteItem()
@@ -245,18 +307,16 @@ void deleteItem()
 			ITEM_COUNT = t; // new count after deletion
 			if (found)
 			{
-				gotoxy(15,(7+ITEM_COUNT));
+				gotoxy(15, (7 + ITEM_COUNT));
 				printf("processing.....");
-				usleep(120000);
-				gotoxy(15,(7+ITEM_COUNT));	
+				gotoxy(15, (7 + ITEM_COUNT));	
 				printf("\tItem deleted successfully!\n");
 			}
 			else
 			{
-					gotoxy(15,(7+ITEM_COUNT));
+				gotoxy(15, (7 + ITEM_COUNT));
 				printf("processing.....");
-				usleep(120000);
-					gotoxy(15,(8+ITEM_COUNT));
+				gotoxy(15, (8 + ITEM_COUNT));
 				printf("Item not found in inventory.");
 			}
 			/*Copies back to original struct from the temporary struct*/
